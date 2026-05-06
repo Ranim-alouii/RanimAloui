@@ -145,6 +145,7 @@ The application includes comprehensive testing:
 - **ViewModel Tests**: Business logic validation
 - **Repository Tests**: Data layer verification
 - **UI Tests**: User interaction testing
+- **Nav Tests**: User navigation testing
 - **Integration Tests**: End-to-end functionality
 
 ## 📊 Database Schema
@@ -259,8 +260,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For questions, issues, or contributions:
 
 - **Issues**: [GitHub Issues](https://github.com/your-username/ranimaloui2/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/ranimaloui2/discussions)
-- **Email**: [your-email@example.com](mailto:your-email@example.com)
 
 ---
 
