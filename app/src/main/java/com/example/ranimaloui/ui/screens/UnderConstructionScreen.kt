@@ -7,13 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.ranimaloui.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,18 +19,14 @@ fun UnderConstructionScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Under Exploration",
-                        modifier = Modifier.testTag("under_exploration_title")
-                    )
-                },
+                title = { Text("Under Exploration") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -44,7 +38,7 @@ fun UnderConstructionScreen(navController: NavController) {
         ) {
             Icon(
                 imageVector = Icons.Default.Build,
-                contentDescription = "Construction Icon",
+                contentDescription = null,
                 modifier = Modifier.size(100.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
@@ -64,7 +58,7 @@ fun UnderConstructionScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Stay tuned while we unearth more treasures!",
+                text = "Stay tuned!",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground
                 ),
@@ -79,10 +73,7 @@ fun UnderConstructionScreen(navController: NavController) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .testTag("go_back_button"),
-                elevation = ButtonDefaults.buttonElevation(4.dp)
+                modifier = Modifier.fillMaxWidth(0.7f)
             ) {
                 Text("Go Back")
             }

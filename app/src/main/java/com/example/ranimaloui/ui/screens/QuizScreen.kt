@@ -25,7 +25,6 @@ import com.example.ranimaloui.data.Category
 import com.example.ranimaloui.data.Difficulty
 import com.example.ranimaloui.viewmodel.QuizViewModel
 import com.example.ranimaloui.data.HeritageRepository
-import com.example.ranimaloui.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,14 +48,13 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
     val currentQuestion = quizState.questions[quizState.currentQuestionIndex]
     val progress = (quizState.currentQuestionIndex + 1).toFloat() / quizState.questions.size.toFloat()
 
-    // Options logic: includes the correct answer and unique alternatives
     val options = remember(currentQuestion) {
         listOf(
             "Carthage site",
             "Dougga ruins",
             "El Jem Amphitheater",
             currentQuestion.correctAnswer
-        ).filter { it.isNotBlank() }.distinct().shuffled()
+        ).shuffled()
     }
 
     Scaffold(
@@ -85,7 +83,6 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
-                    // FIXED: Changed strokeCap to StrokeCap.Round to fix 'CircularIndicatorTrackStrokeCap' error
                     LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier
@@ -107,7 +104,7 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(220.dp),
+                            .height(200.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
@@ -121,10 +118,6 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
-                        } else {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("Historical Image Loading...", style = MaterialTheme.typography.bodySmall)
-                            }
                         }
                     }
                 }
@@ -144,7 +137,7 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                     Text(
                         "Time: ${quizState.timeLeft}s",
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (quizState.timeLeft < 5) AccentRed else MaterialTheme.colorScheme.primary,
+                        color = if (quizState.timeLeft < 5) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -156,8 +149,8 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
 
                     val containerColor = when {
                         !isAnswered -> MaterialTheme.colorScheme.surface
-                        isCorrectAnswer -> AccentGreen
-                        isSelected && !isCorrectAnswer -> AccentRed
+                        isCorrectAnswer -> MaterialTheme.colorScheme.tertiary
+                        isSelected && !isCorrectAnswer -> MaterialTheme.colorScheme.error
                         else -> MaterialTheme.colorScheme.surface
                     }
 
@@ -168,13 +161,12 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                     }
 
                     val borderColor = when {
-                        isAnswered && isCorrectAnswer -> AccentGreen
-                        isAnswered && isSelected && !isCorrectAnswer -> AccentRed
+                        isAnswered && isCorrectAnswer -> MaterialTheme.colorScheme.tertiary
+                        isAnswered && isSelected && !isCorrectAnswer -> MaterialTheme.colorScheme.error
                         else -> MaterialTheme.colorScheme.primary
                     }
 
                     OutlinedButton(
-                        // FIXED: Changed selectAnswer to onAnswerSelected to match ViewModel
                         onClick = { if (!isAnswered) viewModel.onAnswerSelected(option) },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                         enabled = !isAnswered || isSelected || isCorrectAnswer,
@@ -204,7 +196,6 @@ fun QuizScreen(navController: NavController, category: Category, difficulty: Dif
                                 if (quizState.currentQuestionIndex + 1 < quizState.questions.size) {
                                     viewModel.nextQuestion()
                                 } else {
-                                    // FIXED: Navigates to results with score and total
                                     navController.navigate("results/${quizState.score}/${quizState.questions.size}")
                                 }
                             },

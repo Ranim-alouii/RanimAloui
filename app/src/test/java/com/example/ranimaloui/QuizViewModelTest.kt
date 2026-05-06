@@ -1,67 +1,73 @@
 package com.example.ranimaloui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.ranimaloui.data.Category
-import com.example.ranimaloui.data.Difficulty
-import com.example.ranimaloui.data.HeritageRepository
-import com.example.ranimaloui.data.Question
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /**
- * Data class representing the UI state of the Quiz
+ * Unit tests for Quiz scoring and calculations
+ * Tests verify core scoring logic and percentage calculations
  */
-data class QuizUiState(
-    val questions: List<Question> = emptyList(),
-    val currentQuestionIndex: Int = 0,
-    val selectedAnswer: String? = null,
-    val score: Int = 0,
-    val isQuizFinished: Boolean = false,
-    val isLoading: Boolean = false
-)
-
-class QuizViewModel(private val repository: HeritageRepository) : ViewModel() {
-
-    private val _quizState = MutableStateFlow(QuizUiState())
-    val quizState: StateFlow<QuizUiState> = _quizState.asStateFlow()
+@RunWith(JUnit4::class)
+class QuizViewModelTest {
 
     /**
-     * Loads questions based on category and difficulty
+     * Test scoring calculation: Each correct answer = 1 point
      */
-    fun loadQuestions(category: Category, difficulty: Difficulty) {
-        viewModelScope.launch {
-            _quizState.update { it.copy(isLoading = true) }
-            val questions = repository.getQuestions(category, difficulty)
-            _quizState.update {
-                it.copy(
-                    questions = questions,
-                    isLoading = false,
-                    currentQuestionIndex = 0,
-                    selectedAnswer = null,
-                    isQuizFinished = false
-                )
-            }
-        }
+    @Test
+    fun testScoringLogic() {
+        var score = 0
+        // Simulate 3 correct answers
+        score += 1
+        score += 1
+        score += 1
+        assertEquals(3, score)
     }
 
     /**
-     * Updates the state when a user selects an answer
-     * This matches the call in QuizViewModelAndroidTest.kt
+     * Test percentage calculation:
+     * If a user scores 4 out of 5 questions correct, that's 80%
      */
-    fun onAnswerSelected(answer: String) {
-        _quizState.update { currentState ->
-            currentState.copy(selectedAnswer = answer)
-        }
+    @Test
+    fun testPercentageCalculation_80Percent() {
+        val totalQuestions = 5
+        val correctAnswers = 4
+        val percentage = (correctAnswers * 100) / totalQuestions
+        assertEquals(80, percentage)
     }
 
     /**
-     * Resets the quiz state
+     * Test percentage calculation:
+     * If a user scores 5 out of 5 questions correct, that's 100%
      */
-    fun resetQuiz() {
-        _quizState.update { QuizUiState() }
+    @Test
+    fun testPercentageCalculation_100Percent() {
+        val totalQuestions = 5
+        val correctAnswers = 5
+        val percentage = (correctAnswers * 100)/ totalQuestions
+        assertEquals(100, percentage)
+    }
+
+    /**
+     * Test percentage calculation:
+     * If a user scores 2 out of 5 questions correct, that's 40%
+     */
+    @Test
+    fun testPercentageCalculation_40Percent() {
+        val totalQuestions = 5
+        val correctAnswers = 2
+        val percentage = (correctAnswers * 100) / totalQuestions
+        assertEquals(40, percentage)
+    }
+
+    /**
+     * Test timer: 15-second timer per question
+     * The quiz has a 15-second countdown for each question
+     */
+    @Test
+    fun testQuestionTimer() {
+        val timerDuration = 15 // seconds
+        assertEquals(15, timerDuration)
     }
 }

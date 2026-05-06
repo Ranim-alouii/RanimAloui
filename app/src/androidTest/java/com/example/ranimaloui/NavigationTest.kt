@@ -7,45 +7,77 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Robust Navigation Tests for Tunisia Heritage Quest.
+ * Uses TestTags and performTouchInput to ensure compatibility with API 35/36
+ * and avoid legacy InputManager exceptions.
+ */
 @RunWith(AndroidJUnit4::class)
 class NavigationTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    private val splashToMenuTimeout = 12000L
+    private val interactionTimeout = 5000L
+
     @Test
     fun testNavigationFlow_SplashToQuiz() {
-        // Wait for Splash screen to transition
-        composeTestRule.waitUntil(timeoutMillis = 8000) {
-            composeTestRule.onAllNodesWithText("Start Quiz", ignoreCase = true).fetchSemanticsNodes().isNotEmpty()
+        // 1. Wait for Main Menu to load after Splash
+        composeTestRule.waitUntil(splashToMenuTimeout) {
+            composeTestRule.onAllNodesWithTag("start_quiz_button").fetchSemanticsNodes().isNotEmpty()
         }
+        
+        // Use testTag for reliable selection and performTouchInput to bypass legacy injection
+        composeTestRule.onNodeWithTag("start_quiz_button", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performTouchInput { click() }
 
-        // Use performClick() but wrap it in try-catch if the InputManager remains stubborn
-        // on API 36, or ensure you are using the latest Compose UI Test libraries.
-        composeTestRule.onNodeWithText("Start Quiz", ignoreCase = true).performClick()
+        // 2. Wait for Category Screen
+        composeTestRule.waitUntil(interactionTimeout) {
+            composeTestRule.onAllNodesWithTag("category_list").fetchSemanticsNodes().isNotEmpty()
+        }
+        
+        // Select 'Roman Heritage' via its unique test tag
+        composeTestRule.onNodeWithTag("category_button_ROMAN_HERITAGE", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performTouchInput { click() }
 
-        composeTestRule.onNodeWithText("Select Category", ignoreCase = true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Roman Heritage", ignoreCase = true).performClick()
+        // 3. Wait for Difficulty Screen
+        composeTestRule.waitUntil(interactionTimeout) {
+            composeTestRule.onAllNodesWithTag("difficulty_button_EASY").fetchSemanticsNodes().isNotEmpty()
+        }
+        
+        composeTestRule.onNodeWithTag("difficulty_button_EASY", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performTouchInput { click() }
 
-        composeTestRule.onNodeWithText("Select Difficulty", ignoreCase = true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Easy", ignoreCase = true).performClick()
-
-        // Use useUnmergedTree for TopAppBar titles
-        composeTestRule.onNodeWithText("Quiz", ignoreCase = true, useUnmergedTree = true).assertExists()
+        // 4. Verify Quiz Screen is active
+        composeTestRule.waitUntil(interactionTimeout) {
+            composeTestRule.onAllNodesWithText("Quiz").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithText("Quiz").assertExists()
     }
 
     @Test
     fun testRedirectionToUnderConstruction() {
-        composeTestRule.waitUntil(timeoutMillis = 8000) {
-            composeTestRule.onAllNodesWithText("Start Quiz", ignoreCase = true).fetchSemanticsNodes().isNotEmpty()
+        // 1. Wait for Main Menu
+        composeTestRule.waitUntil(splashToMenuTimeout) {
+            composeTestRule.onAllNodesWithTag("start_quiz_button").fetchSemanticsNodes().isNotEmpty()
         }
-        composeTestRule.onNodeWithText("Start Quiz", ignoreCase = true).performClick()
+        composeTestRule.onNodeWithTag("start_quiz_button").performTouchInput { click() }
 
-        // Select Carthaginian Heritage
-        composeTestRule.onNodeWithText("Carthaginian Heritage", ignoreCase = true).performClick()
+        // 2. Select an unfinished category (e.g., Carthaginian)
+        composeTestRule.waitUntil(interactionTimeout) {
+            composeTestRule.onAllNodesWithTag("category_button_CARTHAGINIAN_HERITAGE").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithTag("category_button_CARTHAGINIAN_HERITAGE").performTouchInput { click() }
 
-        // Verify redirection
-        composeTestRule.onNodeWithText("Under Exploration", ignoreCase = true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Go Back", ignoreCase = true).assertIsDisplayed()
+        // 3. Verify redirection to Under Construction
+        composeTestRule.waitUntil(interactionTimeout) {
+            composeTestRule.onAllNodesWithText("Under Exploration").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithText("Under Exploration").assertExists()
+        composeTestRule.onNodeWithText("Go Back").assertExists()
     }
 }

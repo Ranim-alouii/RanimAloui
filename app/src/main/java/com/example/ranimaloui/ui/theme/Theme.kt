@@ -1,29 +1,22 @@
 package com.example.ranimaloui.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-/**
- * Mediterranean Dark Palette - "Tunisian Night"
- */
 private val DarkColorScheme = darkColorScheme(
-    primary = Blue400, // Lighter blue for accessibility in dark mode
+    primary = Blue400,
     onPrimary = Color.Black,
-    background = Slate900,
-    surface = Color(0xFF1E293B),
+    background = DarkBackground,
+    surface = SurfaceDark,
     onBackground = Color.White,
     onSurface = Color.White,
     secondary = WarmSand,
@@ -31,11 +24,8 @@ private val DarkColorScheme = darkColorScheme(
     error = AccentRed
 )
 
-/**
- * Mediterranean Light Palette - "Sun-washed Heritage"
- */
 private val LightColorScheme = lightColorScheme(
-    primary = Blue900, // Deep Mediterranean Blue
+    primary = DeepMediterraneanBlue,
     onPrimary = Color.White,
     background = Slate50,
     surface = Color.White,
@@ -49,20 +39,10 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun HeritageTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // We set dynamicColor to false to keep the specific Tunisia Heritage brand colors
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
-    // This block ensures the Status Bar color matches the theme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

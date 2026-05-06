@@ -3,12 +3,19 @@ package com.example.ranimaloui.data
 import android.content.Context
 import com.example.ranimaloui.R
 
-class HeritageRepository(private val context: Context) {
+/**
+ * Repository for accessing and managing heritage questions
+ * Marked as open to allow for testing extensions
+ */
+open class HeritageRepository(private val context: Context) {
 
     private val database = AppDatabase.getDatabase(context)
     private val dao = database.questionDao()
 
-    suspend fun getQuestions(category: Category, difficulty: Difficulty): List<Question> {
+    /**
+     * Marked as open to allow for test mocking
+     */
+    open suspend fun getQuestions(category: Category, difficulty: Difficulty): List<Question> {
         populateIfNeeded()
         val entities = dao.getQuestionsByCategoryAndDifficulty(category.name, difficulty.name)
         return entities.map { entity ->

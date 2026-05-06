@@ -14,11 +14,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ranimaloui.R
 
-/**
- * ResultsScreen displays the final score and performance feedback.
- * Requirement: Adaptive UI using BoxWithConstraints.
- * Requirement: System-aware theme using MaterialTheme.colorScheme.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultsScreen(navController: NavController, score: Int, total: Int) {
@@ -32,7 +27,6 @@ fun ResultsScreen(navController: NavController, score: Int, total: Int) {
 
     Scaffold(
         topBar = {
-            // Theme-aware TopAppBar
             TopAppBar(
                 title = { Text(stringResource(R.string.results_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -48,7 +42,6 @@ fun ResultsScreen(navController: NavController, score: Int, total: Int) {
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Adaptive logic: card scales based on screen width
             val isTabletOrLandscape = maxWidth > 600.dp
             val cardWidthMultiplier = if (isTabletOrLandscape) 0.5f else 0.9f
 
@@ -78,14 +71,14 @@ fun ResultsScreen(navController: NavController, score: Int, total: Int) {
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontFamily = FontFamily.Serif,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary // Theme-aware primary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         )
                         
                         Text(
                             text = stringResource(R.string.score, score, total),
                             style = MaterialTheme.typography.headlineMedium.copy(
-                                color = MaterialTheme.colorScheme.tertiary, // Theme-aware accent (Green)
+                                color = MaterialTheme.colorScheme.tertiary,
                                 fontSize = 28.sp
                             )
                         )
@@ -101,7 +94,7 @@ fun ResultsScreen(navController: NavController, score: Int, total: Int) {
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = feedbackMessage,
+                            feedbackMessage,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontFamily = FontFamily.Serif,
                                 fontSize = 18.sp,
